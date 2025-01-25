@@ -3,11 +3,10 @@ version: "0.0.1"                            # Flow specification version
 metadata:
   flow_type: "compound"                             # Specifies this as a compound flow
   name: "shortFilm-Gen"                            # Unique identifier
-  description: "This Compound flows takes in the style of a director, and firstly creates a plot from the genre and movie idea, 
-    then adds on the style of the director to the plot and generates a script for a short movie."       # Flow purpose
+  description: "This Compound flows takes in the style of a director, and firstly creates a plot from the genre and movie idea, then adds on the style of the director to the plot and generates a script for a short movie."       # Flow purpose
   author: "th3silv4n3lf"                           # Your Mira Flows username
   tags: ["Short-Movie","script", "creator"]                         # Discovery keywords
-  private: true                                     # Access control setting
+  private: false                                     # Access control setting
 
 inputs:
   genre:                                    # Primary input parameter
@@ -35,7 +34,7 @@ workflow:
       genre: ${inputs.genre}
       story-type: ${inputs.story_type}
 
-  # Custom processing stage - starts immediately (parallel to first_flow)
+  # Elemental Flow stage - starts immediately (parallel to first_flow)
   second_flow:                                      # Parallel processing stage
     type: "elemental"
     flow_name: "th3silv4n3lf/Cine-Add"
