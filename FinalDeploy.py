@@ -11,7 +11,7 @@ api_key = os.getenv("MIRA_API_KEY")
 client = MiraClient(config={"API_KEY": api_key})
 
 # Basic test
-flow = CompoundFlow(source=r"D:\Coding\Python\Flows(YAML)\shortFilmGen.yaml")  # Load flow configuration
+flow = CompoundFlow(source=r"shortFilmGen.yaml")  # Load flow configuration
 try:
         client.flow.deploy(flow)  # Exit loop if successful
         print("Deployed succesffuly")                             # Deploy to platform
