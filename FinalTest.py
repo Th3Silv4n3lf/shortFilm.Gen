@@ -11,7 +11,7 @@ api_key = os.getenv("MIRA_API_KEY")
 client = MiraClient(config={"API_KEY": api_key})
 
 # Basic test
-flow = CompoundFlow(source=r"D:\Coding\Python\Flows(YAML)\shortFilmGen.yaml")  # Load flow configuration
+flow = CompoundFlow(source=r"shortFilmGen.yaml")  # Load flow configuration
 input_dict = {"genre": "Suspense Action", "cinematographer": "Quentin Tarantino", "story_type": "KGF, Bahubali"}  # Prepare test input
 
 #Exception Handling
