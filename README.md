@@ -30,12 +30,10 @@
 ---
 
 ## How to Use
-
-1. *Plot Generation*:
-   - Select your preferred genre (e.g., drama, comedy, thriller).
-   - Input the director you want to style your script.
-   - Give an movie suggestion which co-relates to the short-film you are trying to make.
-   - Let ShortFilm.Gen generate a unique script for your short film, inlcuding msuic composition and possible casting options according to the characters.
+- Select your preferred genre (e.g., drama, comedy, thriller).
+- Input the director you want to style your script.
+- Give an movie suggestion which co-relates to the short-film you are trying to make.
+- Let ShortFilm.Gen generate a unique script for your short film, inlcuding msuic composition and possible casting options according to the characters.
 
 ---
 
