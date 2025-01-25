@@ -1,0 +1,185 @@
+version: "0.0.1"                            # Flow specification version
+
+metadata:
+  flow_type: "compound"                             # Specifies this as a compound flow
+  name: "shortFilm-Gen"                            # Unique identifier
+  description: "This Compound flows takes in the style of a director, and firstly creates a plot from the genre and movie idea, 
+    then adds on the style of the director to the plot and generates a script for a short movie."       # Flow purpose
+  author: "th3silv4n3lf"                           # Your Mira Flows username
+  tags: ["Short-Movie","script", "creator"]                         # Discovery keywords
+  private: true                                     # Access control setting
+
+inputs:
+  genre:                                    # Primary input parameter
+    type: string
+    description: "Enter Genre of the movie you want to create"
+    required : true
+    example: "Horror, Action, Romance, Comedy, RomCom, SitCom etc."
+  cinematographer:                                    # Secondary input parameter
+    type: string
+    description: "The cinematographer/director whose style you want to add"
+    required: true
+    example: "Christopher Nolan, Quentin Tarantino, Alfred Hitchcock, Akira Kurosawa etc."
+  story_type:                                    # Tertiary input parameter
+    type: string
+    description: "Name of a similar story example:"
+    required: true
+    example: "Any previous movies like Tenet, Inception, Pulp Fiction, Psycho, KGF etc."
+
+workflow:
+  # Elemental Flow stage - starts immediately
+  first_flow:                                       # First processing stage
+    type: "elemental"
+    flow_name: "aditya-innani/Plot-generator"
+    inputs:
+      genre: ${inputs.genre}
+      story-type: ${inputs.story_type}
+
+  # Custom processing stage - starts immediately (parallel to first_flow)
+  second_flow:                                      # Parallel processing stage
+    type: "elemental"
+    flow_name: "th3silv4n3lf/Cine-Add"
+    inputs:
+      cinematographer: ${inputs.cinematographer}
+      genre: ${inputs.genre}
+
+
+  # Waits for both first_flow and second_flow to complete
+  third_flow:                                       
+    type: "custom"
+    description: "Script Generator from Plot and given Director Style"
+    depends_on: [first_flow, second_flow]  # Dependent on first_flow and second_flow
+    inputs:
+      input31: ${first_flow.output} # uses output of first_flow as input
+      input32: ${second_flow.output} # uses output of second_flow as input
+    model:
+      provider: "openai"                            # e.g., anthropic, openai, meta, etc.
+      name: "gpt-4o" 
+    prompt: |
+      You are a cinematic script generator. Your task is to create a short film script based on a given plot and cinematographed in the style of a specific director. The script should reflect the director's signature techniques, themes, and visual aesthetics.
+      Inputs:
+      - Style of the Director: {input32} 
+      - Plot: {input31} (a brief summary of the story, including key events and character arcs)
+     
+      GUIDELINES:
+      1. Study the director's style, including their use of camera angles, lighting, color palettes, dialogue, and pacing.
+      2. Break the plot into 3-5 key scenes, each described in detail with cinematic elements.
+      3. Include dialogue that matches the director's style and character development style.
+      4. Highlight unique visual or auditory elements that reflect the director's signature style.
+      5. Ensure the script is concise, well written and suitable for a short film (10-15 minutes runtime).
+      6. IT SHOULD BE ENGAGING AND ENTERTAINING. 
+     
+      Output Format:
+      - Title: A catchy and relevant title for the short film.
+      - Director Style: A brief description of the director's style and how it influences the script.
+      - Scenes: A list of 3-5 scenes, each with:
+        - Scene Number: The order of the scene.
+        - Location: Where the scene takes place.
+        - Visual Description: A vivid description of the cinematography, including camera angles, lighting, and color palette.
+        - Dialogue: Key lines of dialogue that reflect the director's tone.
+
+  #Waits for the first_flow and second_flow to complete
+  fourth_flow:
+    type: "custom"
+    description: "This flow takes the output of the first two flows and suggests actors for the roles in the script."
+    depends_on: [first_flow, second_flow] #Dependent on first_flow and second_flow
+    inputs:
+      input41: ${first_flow.output} #uses output of first_flow as input
+      input42: ${second_flow.output} #uses output of second_flow as input
+    model:
+      provider: "openai" #e.g., anthropic, openai, meta, etc.
+      name: "gpt-4o"
+    prompt: |
+      prompt: |
+      You are a casting director. Your task is to suggest suitable actors/actresses for the main characters in a short film based on their descriptions and the overall tone of the story.
+    
+      Inputs:
+      - Character Descriptions: A list of main characters with single-line descriptions.(Take from {input41})
+      - Tone: The overall tone of the story (Take from {input42})
+    
+      Guidelines:
+      1. Analyze the character descriptions given with the plot and identify key traits (e.g., age, personality, physical appearance, emotional depth).
+      2. Suggest actors/actresses who have demonstrated similar roles or traits in their previous work.
+      3. Ensure the suggestions align with the genre and tone of the story.
+      4. Provide a one line justification for each casting suggestion, explaining why the actor/actress is a good fit for the role.
+      5. Limit suggestions to 1 option per character to keep the output concise.
+    
+      Output Format:
+      - Character Name: The name of the character.
+        - Suggested Actors/Actresses:
+          - Name: [Actor/Actress Name]
+            - Justification: A one line explanation of why they are a good fit for the role.
+          - Name: [Actor/Actress Name]
+            - Justification: A one line explanation of why they are a good fit for the role.
+  #Waits for the first_flow and second_flow to complete          
+  fifth_flow: 
+    type: "custom"
+    description: "This flow takes the output of the first flow and second flow and generates a theme outro music for the short film."
+    depends_on: [first_flow, second_flow] #Dependent on first_flow and second_flow
+    inputs:
+      input51: ${first_flow.output} # uses output of first_flow as input
+      input52: ${second_flow.output} # uses output of second_flow as input
+    model:
+      provider: "openai"                            # e.g., anthropic, openai, meta, etc.
+      name: "gpt-4o" 
+    prompt: |
+      You are a music composer. Your task is to create a theme outro music for a short film based on the plot and the director's style.
+      Inputs:
+      - Plot: {input51} (a brief summary of the story, including key events and character arcs)
+      - Director's Style: {input52} (a brief description of the director's style and how it influences the script)
+    
+      Guidelines:
+      1. Consider the mood, tone, and themes of the story when composing the music.
+      2. Create a musical piece that complements the director's style and enhances the emotional impact of the film.
+      3. Use instruments, melodies, and rhythms that reflect the genre and atmosphere of the short film.
+      4. Include THE CHORDS, INSTUMENTS AND NOTES USED IN THE MUSIC with the TIME STAMPS.
+      4. Ensure the music is suitable for an outro sequence and leaves a lasting impression on the audience.
+      5. IT SHOULD BE ENGAGING AND ENTERTAINING.
+    
+      Output Format:
+      - Title: A title for the theme outro music.
+      - Musical Composition: A description of the music, including instruments, tempo, notes, chords and time stamps.
+
+  #Waits for the third_flow to complete
+  sixth_flow:
+    type: "custom"
+    depends_on: [third_flow] #Dependent on third_flow
+    inputs:
+      input61: ${third_flow.output} #uses output of third_flow as input
+    model:
+      provider: "openai" #e.g., anthropic, openai, meta, etc.
+      name: "gpt-4o"
+    prompt: |
+      You are a script editor. Your task is to review and refine the short film script generated by the script generator to ensure it is polished and ready for production.
+    
+      Inputs:
+      - Script: {input61} (the script generated by the script generator)
+    
+      Guidelines:
+      1. Review the script for coherence, clarity, and consistency in tone.
+      2. Edit dialogue to enhance character development and match the director's style.
+      3. Ensure the script adheres to the short film format and runtime (10-15 minutes).
+      4. Identify any plot holes, inconsistencies, or areas that require further development.
+      5. Enhance the script with vivid descriptions, engaging dialogue, and visual storytelling elements.
+      6. IT SHOULD BE ENGAGING AND ENTERTAINING.
+    
+      Output Format:
+      - Title: The title of the short film.
+      - Revised Script: The refined script with edits and improvements.The Format should be like this:
+        - Scenes: A list of 3-5 scenes, each with:
+          - Scene Number: The order of the scene.
+          - Location: Where the scene takes place.
+          - Visual Description: A vivid description of the cinematography, including camera angles, lighting, and color palette.
+          - Dialogue: Key lines of dialogue that reflect the director's tone.
+      - Director's Note: A brief note from the director on the vision for the film and key elements of their style.
+
+output:
+  value:                                           # Combine & customise outputs in order
+    - ${fourth_flow.output}
+    - ${fifth_flow.output}
+    - ${sixth_flow.output}
+readme: |
+  This Flow is a compound flow that generates a short film script based on a given plot and cinematographed in the style of a specific director. 
+  It consists of multiple stages that include generating a plot, adding the director's style to the plot, suggesting actors for the roles, creating theme outro music, refining the script, and more.
+  The final output is a polished short film script that reflects the director's signature techniques and themes.
+  The Output Also includes the suggested actors for the roles in the script and the theme outro music for the short film.
