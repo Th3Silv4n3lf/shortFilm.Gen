@@ -1,9 +1,10 @@
-version: "0.0.1"                            # Flow specification version
+version: "0.1.3"                            # Flow specification version
 
 metadata:
   flow_type: "compound"                             # Specifies this as a compound flow
-  name: "shortFilm-Gen"                            # Unique identifier
-  description: "This Compound flows takes in the style of a director, and firstly creates a plot from the genre and movie idea, then adds on the style of the director to the plot and generates a script for a short movie."       # Flow purpose
+  name: "shortfilm-gen-ai"                            # Unique identifier
+  description: "This Compound flows takes in the style of a director, and firstly creates a plot from the genre and movie idea, 
+    then adds on the style of the director to the plot and generates a script for a short movie."       # Flow purpose
   author: "th3silv4n3lf"                           # Your Mira Flows username
   tags: ["Short-Movie","script", "creator"]                         # Discovery keywords
   private: false                                     # Access control setting
@@ -34,7 +35,7 @@ workflow:
       genre: ${inputs.genre}
       story-type: ${inputs.story_type}
 
-  # Elemental Flow stage - starts immediately (parallel to first_flow)
+  # Custom processing stage - starts immediately (parallel to first_flow)
   second_flow:                                      # Parallel processing stage
     type: "elemental"
     flow_name: "th3silv4n3lf/Cine-Add"
@@ -46,7 +47,6 @@ workflow:
   # Waits for both first_flow and second_flow to complete
   third_flow:                                       
     type: "custom"
-    description: "Script Generator from Plot and given Director Style"
     depends_on: [first_flow, second_flow]  # Dependent on first_flow and second_flow
     inputs:
       input31: ${first_flow.output} # uses output of first_flow as input
@@ -54,11 +54,14 @@ workflow:
     model:
       provider: "openai"                            # e.g., anthropic, openai, meta, etc.
       name: "gpt-4o" 
+    dataset:
+      source: "th3silv4n3lf/cinematography"                   # Make sure this dataset exists
     prompt: |
       You are a cinematic script generator. Your task is to create a short film script based on a given plot and cinematographed in the style of a specific director. The script should reflect the director's signature techniques, themes, and visual aesthetics.
       Inputs:
       - Style of the Director: {input32} 
       - Plot: {input31} (a brief summary of the story, including key events and character arcs)
+      - Dataset(If available): The given Dataset can be used to research about the director and more recent movies if needed.
      
       GUIDELINES:
       1. Study the director's style, including their use of camera angles, lighting, color palettes, dialogue, and pacing.
@@ -80,7 +83,6 @@ workflow:
   #Waits for the first_flow and second_flow to complete
   fourth_flow:
     type: "custom"
-    description: "This flow takes the output of the first two flows and suggests actors for the roles in the script."
     depends_on: [first_flow, second_flow] #Dependent on first_flow and second_flow
     inputs:
       input41: ${first_flow.output} #uses output of first_flow as input
@@ -89,7 +91,6 @@ workflow:
       provider: "openai" #e.g., anthropic, openai, meta, etc.
       name: "gpt-4o"
     prompt: |
-      prompt: |
       You are a casting director. Your task is to suggest suitable actors/actresses for the main characters in a short film based on their descriptions and the overall tone of the story.
     
       Inputs:
@@ -113,7 +114,6 @@ workflow:
   #Waits for the first_flow and second_flow to complete          
   fifth_flow: 
     type: "custom"
-    description: "This flow takes the output of the first flow and second flow and generates a theme outro music for the short film."
     depends_on: [first_flow, second_flow] #Dependent on first_flow and second_flow
     inputs:
       input51: ${first_flow.output} # uses output of first_flow as input
@@ -173,10 +173,10 @@ workflow:
       - Director's Note: A brief note from the director on the vision for the film and key elements of their style.
 
 output:
-  value:                                           # Combine & customise outputs in order
+  value:              
+    - ${sixth_flow.output}                             # Combine & customise outputs in order
     - ${fourth_flow.output}
     - ${fifth_flow.output}
-    - ${sixth_flow.output}
 readme: |
   This Flow is a compound flow that generates a short film script based on a given plot and cinematographed in the style of a specific director. 
   It consists of multiple stages that include generating a plot, adding the director's style to the plot, suggesting actors for the roles, creating theme outro music, refining the script, and more.
