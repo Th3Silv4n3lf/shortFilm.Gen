@@ -1,4 +1,4 @@
-version: "0.1.3"                            # Flow specification version
+version: "0.1.4"                            # Flow specification version
 
 metadata:
   flow_type: "compound"                             # Specifies this as a compound flow
@@ -164,13 +164,14 @@ workflow:
     
       Output Format:
       - Title: The title of the short film.
-      - Revised Script: The refined script with edits and improvements.The Format should be like this:
+      - Director's Note: A brief note from the director on the vision for the film and key elements of their style.
+      - Script: The refined script with edits and improvements.The Format should be like this:
         - Scenes: A list of 3-5 scenes, each with:
           - Scene Number: The order of the scene.
           - Location: Where the scene takes place.
           - Visual Description: A vivid description of the cinematography, including camera angles, lighting, and color palette.
           - Dialogue: Key lines of dialogue that reflect the director's tone.
-      - Director's Note: A brief note from the director on the vision for the film and key elements of their style.
+
 
 output:
   value:              
