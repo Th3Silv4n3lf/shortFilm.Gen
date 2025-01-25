@@ -1,7 +1,9 @@
 # shortFilm.Gen
-# shortFilm.Gen
+
 
 *shortFilm.Gen* is an innovative AI-powered tool designed to assist filmmakers, writers, and creatives in generating short film plots, writing dialogues, composing music, setting scenes, and even acting as a virtual cinematographer. Whether you're a seasoned filmmaker or a beginner, shortFilm.Gen is your one-stop solution for creating compelling short films from scratch.
+
+<center><img src="ShortFilmGen.jpg" alt="ShortFilmGen" width="600" align="center"/></center>
 
 ---
 
