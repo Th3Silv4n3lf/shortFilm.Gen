@@ -42,7 +42,7 @@
 ## Installation
 
 The corresponding files can be cloned from this GitHub Repo.
-
+Mira API Key required for the generation of script, as the model uses Mira SDK.
 ---
 
 
